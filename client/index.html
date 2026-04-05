@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Client</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .container {
+            width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-add {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-update {
+            background: #ffc107;
+            color: black;
+        }
+
+        .btn-show {
+            background: #007bff;
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 5px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Product Client</h1>
+
+    <h2>Input Product</h2>
+
+    <input type="text" id="name" placeholder="Nama Product">
+    <input type="number" id="price" placeholder="Harga">
+    <input type="number" id="stock" placeholder="Stok">
+    <textarea id="description" placeholder="Deskripsi"></textarea>
+
+    <div class="button-group">
+        <button class="btn-add" onclick="createProduct()">Tambah</button>
+        <button class="btn-update" onclick="updateProduct()">Update</button>
+        <button class="btn-show" onclick="getProducts()">Tampilkan</button>
+    </div>
+
+    <h2>Daftar Product</h2>
+    <ul id="productList"></ul>
+</div>
+
+<script>
+    const API_URL = "http://127.0.0.1:8000/api/products";
+
+    function getProducts() {
+        axios.get(API_URL)
+            .then(response => {
+                let list = document.getElementById("productList");
+                list.innerHTML = "";
+
+                response.data.data.forEach(product => {
+                    list.innerHTML += `
+                        <li>
+                            <strong>${product.name}</strong><br>
+                            Harga: Rp${product.price}<br>
+                            Stock: ${product.stock}<br>
+                            ${product.description}
+                        </li>
+                    `;
+                });
+            })
+            .catch(error => console.log(error));
+    }
+
+    function createProduct() {
+        axios.post(API_URL, {
+            name: document.getElementById("name").value,
+            price: document.getElementById("price").value,
+            stock: document.getElementById("stock").value,
+            description: document.getElementById("description").value
+        })
+        .then(() => {
+            alert("Berhasil tambah data");
+            getProducts();
+        })
+        .catch(() => alert("Gagal tambah data"));
+    }
+
+    function updateProduct() {
+        axios.put(API_URL + "/1", {
+            name: document.getElementById("name").value,
+            price: document.getElementById("price").value,
+            stock: document.getElementById("stock").value,
+            description: document.getElementById("description").value
+        })
+        .then(() => {
+            alert("Berhasil update data");
+            getProducts();
+        })
+        .catch(() => alert("Gagal update data"));
+    }
+
+    getProducts();
+</script>
+
+</body>
+</html>
